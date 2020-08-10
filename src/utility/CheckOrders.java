@@ -83,6 +83,7 @@ public class CheckOrders {
 
 	private void toPrintTodayOrders() throws Exception{
 		try {
+			String date = LocalDate.now().toString();
 			Document doc = new Document();
 			PdfWriter wr = PdfWriter.getInstance(doc, new FileOutputStream("Today-Orders.pdf"));
 			Font boldFontTitle = new Font(Font.FontFamily.TIMES_ROMAN, 18, Font.BOLD);
@@ -133,24 +134,25 @@ public class CheckOrders {
 			
 			ResultSet rs = st.executeQuery("SELECT * FROM orders");
 			while(rs.next()) {
-				n1++;
-				String n2 = Integer.toString(n1);
-				cell0 = new PdfPCell(new Paragraph(n2));
-				cell1 = new PdfPCell(new Paragraph(rs.getString(1)));
-				cell2 = new PdfPCell(new Paragraph(Integer.toString(rs.getInt(2))));
-				cell3 = new PdfPCell(new Paragraph(rs.getString(3)));
-				cell4 = new PdfPCell(new Paragraph(Integer.toString(rs.getInt(4))));
-				cell5 = new PdfPCell(new Paragraph(Integer.toString(rs.getInt(5))));
-				cell6 = new PdfPCell(new Paragraph(Integer.toString(rs.getInt(6))));
-				   
-				table.addCell(cell0);
-				table.addCell(cell1);
-				table.addCell(cell2);
-				table.addCell(cell3);
-				table.addCell(cell4);
-				table.addCell(cell5);
-				table.addCell(cell6);
-				
+				if(date.equals(rs.getString(1))) {
+					n1++;
+					String n2 = Integer.toString(n1);
+					cell0 = new PdfPCell(new Paragraph(n2));
+					cell1 = new PdfPCell(new Paragraph(rs.getString(1)));
+					cell2 = new PdfPCell(new Paragraph(Integer.toString(rs.getInt(2))));
+					cell3 = new PdfPCell(new Paragraph(rs.getString(3)));
+					cell4 = new PdfPCell(new Paragraph(Integer.toString(rs.getInt(4))));
+					cell5 = new PdfPCell(new Paragraph(Integer.toString(rs.getInt(5))));
+					cell6 = new PdfPCell(new Paragraph(Integer.toString(rs.getInt(6))));
+					   
+					table.addCell(cell0);
+					table.addCell(cell1);
+					table.addCell(cell2);
+					table.addCell(cell3);
+					table.addCell(cell4);
+					table.addCell(cell5);
+					table.addCell(cell6);
+				}
 			}
 		    doc.add(table);
 		        
