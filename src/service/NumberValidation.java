@@ -18,6 +18,7 @@ public class NumberValidation {
 	}
 	public static boolean isValidNumber(String number){
 		// Regex to check valid password.
+		
 		String regex = "\\d+";
 
 		// Compile the ReGex

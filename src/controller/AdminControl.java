@@ -60,7 +60,9 @@ public class AdminControl {
 		
 		switch(choice) {
 		case 1:
+			System.out.println("\n=========================================\n");
 			System.out.println("\nRedirecting to Main Page..!\n");
+			System.out.println("\n=========================================\n");
 			Main.selectChoice();
 			break;
 		case 2:
@@ -74,7 +76,9 @@ public class AdminControl {
 
 	private void customerInfo() throws Exception{
 		try {
+			System.out.println("\n=========================================\n");
 			System.out.println("Available Customers\n");
+			System.out.println("\n=========================================\n");
 			ConnectionManager cm = new ConnectionManager();
 			Statement st = cm.getConnection().createStatement();
 			ResultSet rs = st.executeQuery("SELECT * FROM cus_details");
@@ -110,3 +114,4 @@ public class AdminControl {
 	}
 }
 
+//System.out.println("\n=========================================\n");

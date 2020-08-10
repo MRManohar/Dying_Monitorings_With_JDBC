@@ -1,9 +1,18 @@
 package utility;
 
+import java.io.FileOutputStream;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.Random;
+
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 
 import controller.AdminControl;
 import controller.Main;
@@ -55,90 +64,90 @@ public class WorkersPerticulars {
 
 	private void printAvailableWorkers() throws Exception {
 		try {
-//			int n=0;
-//			File fileWorkers = new File("C:\\Users\\mlaks\\eclipse-workspace\\Dying_Monitroings\\BackEnd Data\\Workers.xls");
-//			Document doc = new Document();
-//			FileInputStream fis = new FileInputStream(fileWorkers);
-//			Workbook workbook = new HSSFWorkbook(fis);
-//			HSSFSheet sheet = (HSSFSheet) workbook.getSheetAt(0);
-//
-//			PdfWriter wr = PdfWriter.getInstance(doc, new FileOutputStream("Available-Workers.pdf"));
-//			Font boldFontTitle = new Font(Font.FontFamily.TIMES_ROMAN, 18, Font.BOLD);
-//			Font boldFontSubTitle = new Font(Font.FontFamily.TIMES_ROMAN, 12);
-//			
-//			float [] pointColumnWidths = {100F,200F,180F, 180F,200F,230F,150F};   
-//			PdfPTable table = new PdfPTable(7);
-//			table.setWidths(pointColumnWidths);
-//			
-//			doc.open();
-//			Image image1 = Image.getInstance("LNS_Dyings_Logo.png");
-//			//Fixed Positioning
-//			image1.setAbsolutePosition(350f,720f);
-//			//Scale to new height and new width of image
-//			image1.scaleAbsolute(200, 65);
-//			doc.add(image1);
-//			
-////			doc.add(new Paragraph("RETAIL INVOICE").setBold().setUnderline().setTextAlignment(TextAlignment.CENTER));
-//			doc.add(new Paragraph("Lakshmi Narasimhas Swami Dyings              ",boldFontTitle));
-//			doc.add(new Paragraph("Venkateswara Kottalu, Proddatur,Kadapa",boldFontSubTitle));
-//			doc.add(new Paragraph("Email :- LNSDYINGS@GMAIL.COM",boldFontSubTitle));
-//			doc.add(new Paragraph("Contact No:- +91 - 9876543210",boldFontSubTitle));
-//			doc.add(new Paragraph("   ============================================================================",boldFontSubTitle));
-//			doc.add(new Paragraph("\n                                                                                                                          Date :- "+LocalDate.now()));
-//			doc.add(new Paragraph("\n                                                            Available-Workers\n"+"\n                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n"));
-//			
-//			PdfPCell cell0 = new PdfPCell(new Paragraph("S.No"));
-//			PdfPCell cell1 = new PdfPCell(new Paragraph("Date of Join"));
-//		    PdfPCell cell2 = new PdfPCell(new Paragraph("ID of Worker"));
-//		    PdfPCell cell3 = new PdfPCell(new Paragraph("Name of Worker"));
-//		    PdfPCell cell4 = new PdfPCell(new Paragraph("Category"));
-//		    PdfPCell cell5 = new PdfPCell(new Paragraph("Mobile Number"));
-//		    PdfPCell cell6 = new PdfPCell(new Paragraph("Address"));
-//		    
-//		    table.addCell(cell0);
-//		    table.addCell(cell1);
-//	        table.addCell(cell2);
-//	        table.addCell(cell3);
-//	        table.addCell(cell4);
-//	        table.addCell(cell5);
-//	        table.addCell(cell6);
-//			
-//			Iterator<Row> itr = sheet.iterator();
-//			while(itr.hasNext()) {
-//				Row row = itr.next();
-//				if(row.getRowNum()!=0) {
-//					n++;
-//					String t = Integer.toString(n);
-//					
-//					cell0 = new PdfPCell(new Paragraph(t));
-//					cell1 = new PdfPCell(new Paragraph(row.getCell(0).getStringCellValue()));
-//				    cell2 = new PdfPCell(new Paragraph(row.getCell(1).getStringCellValue()));
-//				    cell3 = new PdfPCell(new Paragraph(row.getCell(2).getStringCellValue()));
-//				    cell4 = new PdfPCell(new Paragraph(row.getCell(3).getStringCellValue()));
-//				    cell5 = new PdfPCell(new Paragraph(row.getCell(4).getStringCellValue()));
-//				    cell6 = new PdfPCell(new Paragraph(row.getCell(5).getStringCellValue()));
-//				    
-//				    table.addCell(cell0);
-//				    table.addCell(cell1);
-//			        table.addCell(cell2);
-//			        table.addCell(cell3);
-//			        table.addCell(cell4);
-//			        table.addCell(cell5);
-//			        table.addCell(cell6);
-//			        
-//				}
-//			}
-//			workbook.close();
-//	        
-//	        doc.add(table);
-//	        
-//			doc.close();
-//			wr.close();
+			Document doc = new Document();
+			PdfWriter wr = PdfWriter.getInstance(doc, new FileOutputStream("Available-Workes.pdf"));
+			Font boldFontTitle = new Font(Font.FontFamily.TIMES_ROMAN, 18, Font.BOLD);
+			Font boldFontSubTitle = new Font(Font.FontFamily.TIMES_ROMAN, 12);
+			
+			float [] pointColumnWidths = {150F,150F,150F,150F,150F,150F,150F};   
+			PdfPTable table = new PdfPTable(7);
+			table.setWidths(pointColumnWidths);
+			
+			doc.open();
+			
+			Image image1 = Image.getInstance("LNS_Dyings_Logo.png");
+			//Fixed Positioning
+			image1.setAbsolutePosition(350f,720f);
+			//Scale to new height and new width of image
+			image1.scaleAbsolute(200, 65);
+			doc.add(image1);
+			
+//			doc.add(new Paragraph("RETAIL INVOICE").setBold().setUnderline().setTextAlignment(TextAlignment.CENTER));
+			doc.add(new Paragraph("Lakshmi Narasimhas Swami Dyings              ",boldFontTitle));
+			doc.add(new Paragraph("Venkateswara Kottalu, Proddatur,Kadapa",boldFontSubTitle));
+			doc.add(new Paragraph("Email :- LNSDYINGS@GMAIL.COM",boldFontSubTitle));
+			doc.add(new Paragraph("Contact No:- +91 - 9876543210",boldFontSubTitle));
+			doc.add(new Paragraph("   ============================================================================",boldFontSubTitle));
+			doc.add(new Paragraph("\n                                                                                                                          Date :- "+LocalDate.now()));
+			
+			doc.add(new Paragraph("\n                                                            "+"Available-Workes\n"+"\n                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n"));
+			
+			PdfPCell cell0 = new PdfPCell(new Paragraph("S.No"));
+			PdfPCell cell1 = new PdfPCell(new Paragraph("Date"));
+			PdfPCell cell2 = new PdfPCell(new Paragraph("Worker ID"));
+			PdfPCell cell3 = new PdfPCell(new Paragraph("Worker Name"));
+			PdfPCell cell4 = new PdfPCell(new Paragraph("Category"));
+			PdfPCell cell5 = new PdfPCell(new Paragraph("Mobile Number"));
+			PdfPCell cell6 = new PdfPCell(new Paragraph("Address"));
+		    
+		    table.addCell(cell0);
+		    table.addCell(cell1);
+	        table.addCell(cell2);
+	        table.addCell(cell3);
+	        table.addCell(cell4);
+	        table.addCell(cell5);
+	        table.addCell(cell6);
+	        
+	        int n1 = 0;
+			ConnectionManager cm = new ConnectionManager();
+			Statement st = cm.getConnection().createStatement();
+			
+			ResultSet rs = st.executeQuery("SELECT * FROM workers");
+			while(rs.next()) {
+				n1++;
+				String n2 = Integer.toString(n1);
+				cell0 = new PdfPCell(new Paragraph(n2));
+				cell1 = new PdfPCell(new Paragraph(rs.getString(1)));
+				cell2 = new PdfPCell(new Paragraph(rs.getString(2)));
+				cell3 = new PdfPCell(new Paragraph(rs.getString(3)));
+				cell4 = new PdfPCell(new Paragraph(rs.getString(4)));
+				cell5 = new PdfPCell(new Paragraph(rs.getString(5)));
+				cell6 = new PdfPCell(new Paragraph(rs.getString(6)));
+				   
+				table.addCell(cell0);
+				table.addCell(cell1);
+				table.addCell(cell2);
+				table.addCell(cell3);
+				table.addCell(cell4);
+				table.addCell(cell5);
+				table.addCell(cell6);
+				
+			}
+		    doc.add(table);
+		        
+			doc.close();
+			wr.close();
+			System.out.println("\n=========================================\n");
 			System.out.println("PDF generated..");
+			System.out.println("\n=========================================\n");
+			cm.getConnection().close();
+
+
 		}
 		catch(Exception e) {
 			System.out.println("Error in printing available in printAvailableWorkers");
 		}
+		redirecting();
 	}
 
 	private void displayAvailableWorkers() throws Exception {

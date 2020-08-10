@@ -32,7 +32,7 @@ public class CustomerControl {
 	public void customerOptions(String cusID) throws Exception{
 		
 		System.out.println("Please enter your choice");
-		System.out.println("1. Orders\n2. Bill\n3. Display My Orders\n4. Edit My Profile\n5. Display My Profile\n6. Logout\n7. Exit\n");
+		System.out.println("1. Orders\n2. Bill\n3. Accounts\n4. Display My Orders\n5. Edit My Profile\n6. Display My Profile\n7. Logout\n8. Exit\n");
 		int choice = Integer.parseInt(numberValidation.enterNumber());
 		switch(choice) {
 		case 1: 
@@ -42,24 +42,175 @@ public class CustomerControl {
 			generateBill(cusID,1);
 			break;
 		case 3:
-			displayMyOrders(cusID);
+			accounts(cusID);
 			break;
 		case 4:
-			editProfile(cusID);
+			displayMyOrders(cusID);
 			break;
 		case 5:
-			displayProfile(cusID);
+			editProfile(cusID);
 			break;
 		case 6:
-			logout();
+			displayProfile(cusID);
 			break;
 		case 7:
+			logout();
+			break;
+		case 8:
 			System.exit(0);
 			break;
 		default:
 			System.out.println("Please enter correct choice");
 			customerOptions(cusID);
 		}
+	}
+
+	private void accounts(String cusID) throws Exception {
+		System.out.println("Please enter your choice\n1. Pay Bill\n2. Account Statement\n3. Exit");
+		int choice = Integer.parseInt(numberValidation.enterNumber());
+		switch(choice) {
+		case 1:
+			int amt =0;
+			System.out.println("Please enter amount :");
+			amt= Integer.parseInt(numberValidation.enterNumber());
+			String des = "Amount paid to dying";
+			CusPaymentModel cusPaymentModel = new CusPaymentModel(amt,des);
+			CusPaymentDAO cusPaymentDAO = new CusPaymentDAO();
+			cusPaymentDAO.cusPayment(cusID, cusPaymentModel);
+			System.out.println("Do you want to print bill? Y (Yes) or N (No)");
+			Scanner in = new Scanner(System.in);
+			String c = in.next();
+			char choi = c.charAt(0);
+			if(choi == 'Y' || choi == 'y') {
+				toPrintBill(cusID,2,amt);
+			}
+			break;
+		case 2:
+			accountStatement(cusID);
+			break;
+		default:
+			System.out.println("Please enter valid choice");
+			accounts(cusID);
+		}
+	}
+
+	private void accountStatement(String cusID) throws Exception{
+		System.out.println("Please enter your choice\n1. To display my account statement\n2. To print my account statement");
+		int choice = Integer.parseInt(numberValidation.enterNumber());
+		switch(choice) {
+		case 1:
+			toDisplayAccountStatement(cusID);
+			break;
+		case 2:
+			toPrintAccountStatement(cusID);
+			break;
+		default:
+			System.out.println("Please enter valid option");
+			accountStatement(cusID);
+		}
+	}
+
+	private void toPrintAccountStatement(String cusID) throws Exception{
+		try {
+			Document doc = new Document();
+			PdfWriter wr = PdfWriter.getInstance(doc, new FileOutputStream(cusID+"-Account-Statement.pdf"));
+			Font boldFontTitle = new Font(Font.FontFamily.TIMES_ROMAN, 18, Font.BOLD);
+			Font boldFontSubTitle = new Font(Font.FontFamily.TIMES_ROMAN, 12);
+			
+			float [] pointColumnWidths = {100F,180F,180F,180F,130F,130F,130F};   
+			PdfPTable table = new PdfPTable(7);
+			table.setWidths(pointColumnWidths);
+			
+			doc.open();
+			
+			Image image1 = Image.getInstance("LNS_Dyings_Logo.png");
+			//Fixed Positioning
+			image1.setAbsolutePosition(350f,720f);
+			//Scale to new height and new width of image
+			image1.scaleAbsolute(200, 65);
+			doc.add(image1);
+			
+//			doc.add(new Paragraph("RETAIL INVOICE").setBold().setUnderline().setTextAlignment(TextAlignment.CENTER));
+			doc.add(new Paragraph("Lakshmi Narasimhas Swami Dyings              ",boldFontTitle));
+			doc.add(new Paragraph("Venkateswara Kottalu, Proddatur,Kadapa",boldFontSubTitle));
+			doc.add(new Paragraph("Email :- LNSDYINGS@GMAIL.COM",boldFontSubTitle));
+			doc.add(new Paragraph("Contact No:- +91 - 9876543210",boldFontSubTitle));
+			doc.add(new Paragraph("   ============================================================================",boldFontSubTitle));
+			doc.add(new Paragraph("\n                                                                                                                          Date :- "+LocalDate.now()));
+			
+			doc.add(new Paragraph("\n                                                            "+"Account Statement\n"+"\n                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n"));
+			
+			PdfPCell cell0 = new PdfPCell(new Paragraph("S.No"));
+			PdfPCell cell1 = new PdfPCell(new Paragraph("Date"));
+			PdfPCell cell2 = new PdfPCell(new Paragraph("Transaction ID"));
+			PdfPCell cell3 = new PdfPCell(new Paragraph("Description"));
+			PdfPCell cell4 = new PdfPCell(new Paragraph("Debit"));
+			PdfPCell cell5 = new PdfPCell(new Paragraph("Credit"));
+			PdfPCell cell6 = new PdfPCell(new Paragraph("Balance"));
+		    
+		    table.addCell(cell0);
+		    table.addCell(cell1);
+	        table.addCell(cell2);
+	        table.addCell(cell3);
+	        table.addCell(cell4);
+	        table.addCell(cell5);
+	        table.addCell(cell6);
+	        
+	        int n1 = 0;
+			ConnectionManager cm = new ConnectionManager();
+			Statement st = cm.getConnection().createStatement();
+			
+			ResultSet rs = st.executeQuery("SELECT * FROM "+cusID+"_account");
+			
+			while(rs.next()) {
+				n1++;
+				String n2 = Integer.toString(n1);
+					
+				cell0 = new PdfPCell(new Paragraph(n2));
+				cell1 = new PdfPCell(new Paragraph(rs.getString(1)));
+				cell2 = new PdfPCell(new Paragraph(Integer.toString(rs.getInt(2))));
+				cell3 = new PdfPCell(new Paragraph(rs.getString(3)));
+				cell4 = new PdfPCell(new Paragraph(Integer.toString(rs.getInt(4))));
+				cell5 = new PdfPCell(new Paragraph(Integer.toString(rs.getInt(5))));
+				cell6 = new PdfPCell(new Paragraph(Integer.toString(rs.getInt(6))));
+				   
+				table.addCell(cell0);
+				table.addCell(cell1);
+			    table.addCell(cell2);
+			    table.addCell(cell3);
+			    table.addCell(cell4);
+			    table.addCell(cell5);
+			    table.addCell(cell6);
+			    
+			}
+			doc.add(table);
+	        
+			doc.close();
+			wr.close();
+			System.out.println("\n=========================================\n");
+			System.out.println("PDF generated..");
+			System.out.println("\n=========================================\n");
+			cm.getConnection().close();
+			redirecting(cusID);
+		}
+		catch(Exception e) {
+			System.out.println("Error in printing account statement in customer control");
+		}
+	}
+
+	private void toDisplayAccountStatement(String cusID) throws Exception{
+		ConnectionManager cm = new ConnectionManager();
+		Statement st = cm.getConnection().createStatement();
+		
+		ResultSet rs = st.executeQuery("SELECT * FROM "+cusID+"_account");
+		int i=0;
+		System.out.println(Main.spacing("S. No")+Main.spacing("Date")+Main.spacing("Transaction ID")+Main.spacing("Description")+Main.spacing("Debit")+Main.spacing("Credit")+Main.spacing("Balance"));
+		while(rs.next()) {
+			i++;
+			System.out.println(Main.spacing(Integer.toString(i))+Main.spacing(rs.getString(1))+Main.spacing(Integer.toString(rs.getInt(2))+Main.spacing(rs.getString(3)))+Main.spacing(Integer.toString(rs.getInt(4)))+Main.spacing(Integer.toString(rs.getInt(5)))+Main.spacing(Integer.toString(rs.getInt(6))));
+		}
+		cm.getConnection().close();
+		redirecting(cusID);
 	}
 
 	private void logout() throws Exception{
@@ -88,6 +239,9 @@ public class CustomerControl {
 		Statement st = cm.getConnection().createStatement();
 		
 		ResultSet rs = st.executeQuery("SELECT * FROM cus_details");
+		System.out.println("\n=========================================\n");
+		System.out.println("\n Your details\n");
+		System.out.println("\n=========================================\n");
 		
 		while(rs.next()) {
 			if(cusID.equals(rs.getString(2))) {
@@ -120,9 +274,9 @@ public class CustomerControl {
 				System.out.println("sqlName = "+sqlName);
 				stName.executeUpdate(sqlName);
 				cmName.getConnection().close();
-				System.out.println("\n\n==============================\n");
+				System.out.println("\n=========================================\n");
 				System.out.println("Successfully updated\n");
-				System.out.println("\n\n==============================\n");
+				System.out.println("\n=========================================\n");
 				break;
 			case 2:
 				UserNameValidation userNameValidation = new UserNameValidation ();
@@ -132,9 +286,9 @@ public class CustomerControl {
 				String sqlUserName = "UPDATE cus_details SET user_name=\'"+userName+"\' where cus_id=\'"+cusID+"\'";
 				stUserName.executeUpdate(sqlUserName);
 				cmUserName.getConnection().close();
-				System.out.println("\n\n==============================\n");
+				System.out.println("\n=========================================\n");
 				System.out.println("Successfully updated\n");
-				System.out.println("\n\n==============================\n");
+				System.out.println("\n=========================================\n");
 				break;
 			case 3:
 				EmailValidation emailValidation = new EmailValidation();
@@ -144,9 +298,9 @@ public class CustomerControl {
 				String sqlEmail = "UPDATE cus_details SET email=\'"+email+"\' where cus_id=\'"+cusID+"\'";
 				stEmail.executeUpdate(sqlEmail);
 				cmEmail.getConnection().close();
-				System.out.println("\n\n==============================\n");
+				System.out.println("\n=========================================\n");
 				System.out.println("Successfully updated\n");
-				System.out.println("\n\n==============================\n");
+				System.out.println("\n=========================================\n");
 				break;
 			case 4:
 				MobileValidation mobileValidation = new MobileValidation();
@@ -156,9 +310,9 @@ public class CustomerControl {
 				String sqlMobile = "UPDATE cus_details SET mobile_number=\'"+mobileNumber+"\' where cus_id=\'"+cusID+"\'";
 				stMobileNumber.executeUpdate(sqlMobile);
 				cmMobileNumber.getConnection().close();
-				System.out.println("\n\n==============================\n");
+				System.out.println("\n=========================================\n");
 				System.out.println("Successfully updated\n");
-				System.out.println("\n\n==============================\n");
+				System.out.println("\n=========================================\n");
 				break;
 			case 5:
 				PasswordValidation passwordValidation = new PasswordValidation();
@@ -168,9 +322,9 @@ public class CustomerControl {
 				String sqlPassword = "UPDATE cus_details SET password=\'"+password+"\' where cus_id=\'"+cusID+"\'";
 				stPassword.executeUpdate(sqlPassword);
 				cmPassword.getConnection().close();
-				System.out.println("\n\n==============================\n");
+				System.out.println("\n=========================================\n");
 				System.out.println("Successfully updated\n");
-				System.out.println("\n\n==============================\n");
+				System.out.println("\n=========================================\n");
 				break;
 			}
 		}
@@ -199,13 +353,13 @@ public class CustomerControl {
 		
 		ResultSet rs = st.executeQuery("SELECT * FROM "+cusID);
 		System.out.println("My Order are...");
-		System.out.println("\n\n========================================================================================================================\n");
+		System.out.println("\n\n============================================================================================================================================\n");
 		System.out.println(Main.spacing("Date")+Main.spacing("Order ID")+Main.spacing("No of Varpulu")+Main.spacing("KGs of Sapuri")+Main.spacing("KGs of Dupin"));
-		System.out.println("\n\n========================================================================================================================\n");
+		System.out.println("\n\n============================================================================================================================================\n");
 		while(rs.next()) {
 			System.out.println(Main.spacing(rs.getString(1))+Main.spacing(Integer.toString(rs.getInt(2)))+Main.spacing(Integer.toString(rs.getInt(3)))+Main.spacing(Integer.toString(rs.getInt(4)))+Main.spacing(Integer.toString(rs.getInt(5))));
 		}
-		System.out.println("\n\n========================================================================================================================\n");
+		System.out.println("\n\n============================================================================================================================================\n");
 		cm.getConnection().close();
 		redirecting(cusID);		
 	}
@@ -295,12 +449,13 @@ public class CustomerControl {
 	}
 
 	public void generateBill(String cusID,int a) throws Exception{
+		
 		ConnectionManager cm = new ConnectionManager();
 		Statement st = cm.getConnection().createStatement();
 		Long sum=(long) 0;
 		ResultSet rs = st.executeQuery("SELECT * FROM "+cusID);
 		System.out.println(Main.spacing("Date")+Main.spacing("Order ID")+Main.spacing("No of Varpulu")+Main.spacing("KGs of Sapuri")+Main.spacing("KGs of Dupin")+Main.spacing("Amount"));
-		System.out.println("\n\n========================================================================================================================\n");
+		System.out.println("\n\n======================================================================================================================================\n");
 		while(rs.next()) {
 			Long varpulu = rs.getLong(3);
 			Long sapuri = rs.getLong(3);
@@ -310,33 +465,133 @@ public class CustomerControl {
 			System.out.println(Main.spacing(rs.getString(1))+Main.spacing(Integer.toString(rs.getInt(2)))+Main.spacing(Integer.toString(rs.getInt(3)))+Main.spacing(Integer.toString(rs.getInt(4)))+Main.spacing(Integer.toString(rs.getInt(5)))+Main.spacing(Long.toString(amt)));
 			sum+=amt;
 		}
-		System.out.println("\n\n========================================================================================================================\n");
+		System.out.println("\n\n======================================================================================================================================\n");
 		System.out.println(Main.spacing(" ")+Main.spacing(" ")+Main.spacing(" ")+Main.spacing(" ")+Main.spacing("Total")+Main.spacing(Long.toString(sum))+"\n");
 		
 		cm.getConnection().close();
+		int amt = 0;
 		boolean ch = cusPayment();
 		if(ch) {
 			System.out.println("Please enter amount :");
-			int amt = Integer.parseInt(numberValidation.enterNumber());
+			amt= Integer.parseInt(numberValidation.enterNumber());
 			String des = "Amount paid to dying";
 			CusPaymentModel cusPaymentModel = new CusPaymentModel(amt,des);
 			CusPaymentDAO cusPaymentDAO = new CusPaymentDAO();
 			cusPaymentDAO.cusPayment(cusID, cusPaymentModel);
 		}
+		System.out.println("\n=========================================\n");
+		System.out.println("Do you want to print bill? Y (Yes) or N (No)");
+		@SuppressWarnings("resource")
+		Scanner in = new Scanner(System.in);
+		String c = in.next();
+		char choice = c.charAt(0);
+		if(choice == 'Y' || choice == 'y') {
+			toPrintBill(cusID,a,amt);
+		}
 		else {
-			if(a==1)
+			if(a==1) {
 				redirecting(cusID);
+			}
 			else {
 				Bills bills = new Bills();
 				bills.redirecting();
 			}
 		}
-		redirecting(cusID);
+	}
+
+	
+	private void toPrintBill(String cusID, int a, int amt) {
+		try {
+			Document doc = new Document();
+			PdfWriter wr = PdfWriter.getInstance(doc, new FileOutputStream(cusID+"-Bill.pdf"));
+			Font boldFontTitle = new Font(Font.FontFamily.TIMES_ROMAN, 18, Font.BOLD);
+			Font boldFontSubTitle = new Font(Font.FontFamily.TIMES_ROMAN, 12);
+			
+			float [] pointColumnWidths = {150F,150F,150F,150F};   
+			PdfPTable table = new PdfPTable(4);
+			table.setWidths(pointColumnWidths);
+			
+			doc.open();
+			
+			Image image1 = Image.getInstance("LNS_Dyings_Logo.png");
+			//Fixed Positioning
+			image1.setAbsolutePosition(350f,720f);
+			//Scale to new height and new width of image
+			image1.scaleAbsolute(200, 65);
+			doc.add(image1);
+			
+//			doc.add(new Paragraph("RETAIL INVOICE").setBold().setUnderline().setTextAlignment(TextAlignment.CENTER));
+			doc.add(new Paragraph("Lakshmi Narasimhas Swami Dyings              ",boldFontTitle));
+			doc.add(new Paragraph("Venkateswara Kottalu, Proddatur,Kadapa",boldFontSubTitle));
+			doc.add(new Paragraph("Email :- LNSDYINGS@GMAIL.COM",boldFontSubTitle));
+			doc.add(new Paragraph("Contact No:- +91 - 9876543210",boldFontSubTitle));
+			doc.add(new Paragraph("   ============================================================================",boldFontSubTitle));
+			doc.add(new Paragraph("\n                                                                                                                          Date :- "+LocalDate.now()));
+			
+			doc.add(new Paragraph("\n                                                            "+cusID+"\'s-Bill\n"+"\n                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n"));
+			
+			PdfPCell cell0 = new PdfPCell(new Paragraph("S.No"));
+			PdfPCell cell1 = new PdfPCell(new Paragraph("Date"));
+			PdfPCell cell2 = new PdfPCell(new Paragraph("Transaction ID"));
+		    PdfPCell cell3 = new PdfPCell(new Paragraph("Amount"));
+		    
+		    table.addCell(cell0);
+		    table.addCell(cell1);
+	        table.addCell(cell2);
+	        table.addCell(cell3);
+	        
+	        int n1 = 0;
+			ConnectionManager cm = new ConnectionManager();
+			Statement st = cm.getConnection().createStatement();
+			
+			ResultSet rs = st.executeQuery("SELECT * FROM "+cusID+"_account");
+			int transactionID = 0;
+			while(rs.next()) {
+				transactionID = rs.getInt(2);
+			}
+			n1++;
+			String n2 = Integer.toString(n1);
+				
+			cell0 = new PdfPCell(new Paragraph(n2));
+			cell1 = new PdfPCell(new Paragraph(LocalDate.now().toString()));
+			cell2 = new PdfPCell(new Paragraph(Integer.toString(transactionID)));
+			cell3 = new PdfPCell(new Paragraph(Integer.toString(amt)));
+			   
+			table.addCell(cell0);
+			table.addCell(cell1);
+		    table.addCell(cell2);
+		    table.addCell(cell3);
+			
+		    doc.add(table);
+		        
+			doc.close();
+			wr.close();
+			System.out.println("\n=========================================\n");
+			System.out.println("PDF generated..");
+			System.out.println("\n=========================================\n");
+			cm.getConnection().close();
+			if(a==1) {
+				redirecting(cusID);
+			}
+			else if (a==0){
+				Bills bills = new Bills();
+				bills.redirecting();
+			}
+			else if(a==2) {
+				redirecting(cusID);
+			}
+			
+		}
+		catch(Exception e){
+			System.out.println("Error in printing bill in customer controller");
+		}
+		
 	}
 
 	private boolean cusPayment() throws Exception{
 		@SuppressWarnings("resource")
 		Scanner in = new Scanner(System.in);
+		System.out.println("\n=========================================\n");
 		System.out.println("Do you want to pay?\n Please enter Y (Yes) or N (No)");
 		String c = in.next();
 		if(c.charAt(0) == 'Y' || c.charAt(0) == 'y') 
@@ -408,10 +663,9 @@ public class CustomerControl {
 			
 			pst.executeUpdate();
 			cm.getConnection().close();
-			System.out.println("\n\n========================================================================================================================\n");
+			System.out.println("\n=========================================\n");
 			System.out.println("Your order successfully Placed");
-			System.out.println("\n\n========================================================================================================================\n");
-			
+			System.out.println("\n=========================================\n");
 		}
 		catch(Exception e) {
 			System.out.println("Error in storing orders into cus_ids and Orders tables");
